@@ -1,16 +1,70 @@
-# React + Vite
+# JSX #
+Para poder utilizar variables JSX en nuestro codigo cuando estamos en html, tenemos que utilizar las llaves
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+~~~
+const nombre="Carpi";
+return (
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+    <div className= "App">
+        <h1>{nombre}</h1>
+    </div>
+)
+~~~
 
-## React Compiler
+tambien valdria esto:
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+~~~
+const nombre=<h1>Carpi</h1>;
+return (
 
-## Expanding the ESLint configuration
+    <div className= "App">
+        {nombre}
+    </div>
+)
+~~~
+Esto tambien es correcto
+~~~
+  const nombre = <h1>Carpi2</h1>;
+  const edad=<p>27</p>
+  const email=<p>hola@carpicoder.com</p>;
+  const usuario=<div>{nombre}{edad}{email}</div>
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+ 
+
+  return (
+    <>
+     <div className='App'>
+      {usuario}
+      {usuario}
+      {usuario}
+
+      </div>
+    </>
+  )
+~~~
+
+## Funcion Java Script normal
+~~~
+const MostrarNombre =()=>
+{
+  return  "Carpi";
+}
+~~~
+
+## Funcion Java Script que retorna un componente
+Los componentes en React han de empezar por mayuscula
+~~~
+
+const MostrarNombreComponentes=()=>
+{
+  return <h1>Carpi</h1>;
+}
+~~~
+
+Para poder utilizarlo lo haremos como si fuera un componente Html
+~~~
+ <MostrarNombreComponentes/> 
+ o
+<MostrarNombreComponentes></MostrarNombreComponentes> 
+~~~

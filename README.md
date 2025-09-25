@@ -68,3 +68,81 @@ Para poder utilizarlo lo haremos como si fuera un componente Html
  o
 <MostrarNombreComponentes></MostrarNombreComponentes> 
 ~~~
+
+# Componentes y props #
+
+## Componentes ##
+
+Creamos una nueva carpeta llamada "components" alli, creamos un nuevo archivo llamado "Usuario", alli colocaremos el codigo de la funcion usuario. Alli le colocamos la palabra "export" delante de const para poder exportalo.
+I para importarlo en App.jsx, colocamos la siguiente instruccion al principio.
+Asi creamos y utilizamos los componentes
+
+~~~
+import { Usuario } from "./components/Usuario";
+~~~
+
+## Props ##
+
+Siempre pasamos propiedades desde los llamamos, de padre a hijo. Colocamos dentro del parentesis del componente o hijo la palabra "props", o cualquier otra palabra.
+
+Donde se llama se colocan las props:
+~~~
+function App() {
+  return (
+    <div>
+      <Usuario nombre="Carpi" edad="27" nacionalidad="Argentina"/>
+     
+    </div>
+  );
+}
+~~~
+
+En edad estamos colocando el numero como si fuera un string, si quisieramos pasarlo como numero usuariamos {}, si quisiera pasar un objeto de javaScript
+deberia pasarlo asi {{}}, si fuera un array {[]}.
+
+Colocamos props en el padre y si la llamamos en el hijo, si le damos a inspeccionar en la web, veremos que se muestran.
+
+Padre
+~~~
+function App() {
+  return (
+    <div>
+      <Usuario nombre="Carpi" edad={34} nacionalidad="Argentina"/>
+     
+    </div>
+  );
+}
+~~~
+hijo
+~~~
+export const Usuario = (props) => {
+console.log(props);
+
+  return (
+    <div>
+      <h1>Nombre: Carpi</h1>
+      <p>Edad: 28</p>
+      <p>Nacionalidad: Argentino</p>
+    </div>
+  );
+};
+~~~
+Si colocaramos solo una prop en el hijo, recibiriamos solo una. Y si no colocaramos ninguna, en la conola recibiriamos un objeto vacio.
+
+En cambio si colocamos esto:
+~~~
+console.log(props.nombre);
+~~~
+
+En consola apareceran los nombres, solo.
+
+Ahora si queremos llamar en los campos a las props. Las tenemos que colcar dentro de llaves:
+~~~
+<div>
+      <h1>Nombre: {props.nombre}</h1>
+      <p>Edad: {props.edad}</p>
+      <p>Nacionalidad: {props.nacionalidad}</p>
+    </div>
+~~~
+
+

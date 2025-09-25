@@ -1,18 +1,11 @@
+import Counter from "./componentes/Counter";
+import Text from "./componentes/Text";
 
-import './App.css'
 
 function App() {
- 
-
- 
-
-  return (
-    <>
-   
-    </>
-  )
+  return <div>
+    <Counter/>
+    <Text/>
+    </div>;
 }
-
-
-
-export default App
+export default App;

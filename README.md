@@ -75,7 +75,7 @@ Para poder utilizarlo lo haremos como si fuera un componente Html
 
 Creamos una nueva carpeta llamada "components" alli, creamos un nuevo archivo llamado "Usuario", alli colocaremos el codigo de la funcion usuario. Alli le colocamos la palabra "export" delante de const para poder exportalo.
 I para importarlo en App.jsx, colocamos la siguiente instruccion al principio.
-Asi creamos y utilizamos los componentes
+Asi creamos y utilizamos los componentes. HAy que recordar que en un componente solo puede retornar un   \<div>
 
 ~~~
 import { Usuario } from "./components/Usuario";
@@ -145,4 +145,56 @@ Ahora si queremos llamar en los campos a las props. Las tenemos que colcar dentr
     </div>
 ~~~
 
+## Como destructurara un objeto ##
+
+~~~
+const {nombre, edad, nacionalidad} = props; // Destructuracion de objetos
+  console.log(nombre);
+~~~
+
+Son las props pero las colocamos en unas variables con su nombre. 
+Asi podriamos realizar lo mismo que antes de la siguiente manera.
+
+~~~
+ return (
+    <div>
+      <h1>Nombre: {nombre}</h1>
+      <p>Edad: {edad}</p>
+      <p>Nacionalidad: {nacionalidad}</p>
+      <hr/>
+    </div>
+ )
+~~~
+
+Aun existe otra manera y es destructurarlo directamene en el parentesis inicial del comopoente:
+
+~~~
+export const Usuario = ({nombre, edad, nacionalidad}) => {
+  
+  return (
+    <div>
+      <h1>Nombre: {nombre}</h1>
+      <p>Edad: {edad}</p>
+      <p>Nacionalidad: {nacionalidad}</p>
+      <hr/>
+    </div>
+  );
+};
+~~~
+
+### Utilizando Css ###
+Para utilizar el archivo App.css, se tiene que importar dentro de nuestro App.jsx. 
+
+Asi para poder cambiar nuestro fondo de Card colocariamos en App.css.
+(Ya que tiene su className a "card")
+
+~~~
+.card{
+  background-color: blue;
+}
+~~~
+
+Aunque tambien suele hacer de otra manera. Se crea una carpeta para cada componente y alli se crea un archivo personalizado para ese componente.
+
+Tambien se podria crear otra carpeta donde se guardaran todos los archivos .css. o sass o cualquier otro tipo de archivo de estilo
 

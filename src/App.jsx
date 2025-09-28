@@ -1,5 +1,6 @@
+import ItemListContainer from "./components/ItemListContainer"
 
-import './App.css'
+
 
 function App() {
  
@@ -7,9 +8,10 @@ function App() {
  
 
   return (
-    <>
-   
-    </>
+    <div>
+        <ItemListContainer />
+
+    </div>
   )
 }
 

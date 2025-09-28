@@ -1,9 +1,25 @@
-import React from 'react'
+import { useEffect, useState } from "react";
+import pedirProductos from "./pedirProductos";
+import ItemList from "./ItemList";
 
 const ItemListContainer = () => {
-  return (
-    <div>Hola,mundo</div>
-  )
-}
+  // console.log(data);
+  const [productos, setProductos] = useState([]);
 
-export default ItemListContainer
+  useEffect(() => {
+    /**
+     * Llamada a la promesa
+     */
+    pedirProductos().then((res) => {
+      setProductos(res);
+    });
+  }, []);
+
+  return (
+    <div>
+     <ItemList productos={productos}/>
+    </div>
+  );
+};
+
+export default ItemListContainer;

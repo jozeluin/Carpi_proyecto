@@ -156,4 +156,83 @@ Vamos a crear un nuevo componente llamado PokemonList.jsx, utilizaremos un "fetc
 
 Si vemos en la consola al pulsar en consola para que se desplegue la salida. Vemos que nos da una url donde podemos ver los siguientes 20 porque tiene un comando de offset donde coloca 20.
 
-Aunque con la primera url tambien contiene offset y sale. Con la segunda no me sale
+Aunque con la primera url tambien contiene offset y sale. Con la segunda no me sale.
+
+Bueno hemos tenido problemas para implementar el codigo del amigo "Carpi". A la hora de renderizar el hacia una comprobacion para saber si teniamos ya cargado el array que viene de la api con el fetch, el lo hacia asi:
+
+~~~~
+currentList && ...y lo que sea
+~~~~
+
+Pues bien , a mi esto no me funciona, ah de ser asi
+
+~~~~
+currentList.length !== 0 &&
+~~~~
+
+A partir que lo he hecho asi a salido. Despues hay varias opciones, o enseñar un nombre o con el .map recorrer el array en su totalidad:
+
+~~~~
+ <div>
+    <h2>Pokemon List</h2>
+    <ul>
+      {currentList.length !== 0 &&
+        currentList.results.map((pokemon, index) => ( //index viene del map, aprovechamos como key
+          <li key={index}>{pokemon.name}</li>
+        ))}
+    </ul>
+  </div>
+~~~~
+
+Ahora que hemos cargado esos 5, vamos a poner unos botones para poder cargar los 5 siguiente o ver los 5 anteriores.
+Tambien tenemos que pensar que tenemos que cambiar el endpoint de la url, lo que es el limite y el offset. El limite es la cantidad que se pide, el offset es por donde se empieza.
+Tenemos que cambiar la url de forma dinamica. Nos vamos a poyar en unas de las informaciones que nos devuelve .resul, ademas de devolvernos el array tenemos "next" y "previus". Alli tenemos las url que con el limite que hayamos colocado, en nuestro caso es 5, nos devuelve la url con los 5 siguiente o los 5 anteriores.
+Creamos una serie de estados, next, previus y url. Asi iremos cambiando segun pulsemos handleSiguiente o handleAnterior, los valores de la url, next y previus:
+
+~~~~
+function PokemonList() {
+  const [currentList, setCurrentList] = useState([]);
+  const [url, setUrl] = useState(
+    "https://pokeapi.co/api/v2/pokemon?limit=5&offset=0"
+  );
+  const [next, setNext] = useState("");
+  const [previous, setPrevious] = useState("");
+
+  const handleSiguiente = () => {
+    setUrl(next);
+  };
+  const handleAnterior = () => {
+    previous && setUrl(previous);
+  }
+
+  console.log("Esto es el currentList", currentList);
+
+  useEffect(() => {
+    fetch(url)
+      .then((resp) => resp.json())
+      .then((data) => {
+        setCurrentList(data);
+        setNext(data.next);
+        setPrevious(data.previous);
+      });
+  }, [url]);//cada vez que cambie useEffect se volvera a actualizar
+
+  if (currentList.length !== 0) {
+    console.log("currentList entero", currentList.results[0].name);
+  }
+
+  return (
+    <div>
+      <h2>Pokemon List</h2>
+      <ul>
+        {currentList.length !== 0 &&
+          currentList.results.map((pokemon, index) => (
+            <li key={index}>{pokemon.name}</li>
+          ))}
+      </ul>
+      <button onClick={handleAnterior}>Anterior</button>
+      <button onClick={handleSiguiente}>Siguiente</button>
+    </div>
+  );
+}
+~~~~

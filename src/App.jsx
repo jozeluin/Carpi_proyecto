@@ -5,7 +5,6 @@ function App() {
   return (
     <div>
       {/* <Pokemon /> */}
-      <br />
       <PokemonList />
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PokeImagen from "./PokeImagen";
 
 function PokemonList() {
   const [currentList, setCurrentList] = useState([]);
@@ -14,6 +15,8 @@ function PokemonList() {
   const handleAnterior = () => {
     previous && setUrl(previous);
   }
+
+  
 
   console.log("Esto es el currentList", currentList);
 
@@ -37,8 +40,17 @@ function PokemonList() {
       <ul>
         {currentList.length !== 0 &&
           currentList.results.map((pokemon, index) => (
-            <li key={index}>{pokemon.name}</li>
+            <li key={index}>{pokemon.name}
+            <br />
+            <PokeImagen url={pokemon.url} />
+            
+           
+            </li>
+            
+           
+            
           ))}
+        
       </ul>
       <button onClick={handleAnterior}>Anterior</button>
       <button onClick={handleSiguiente}>Siguiente</button>

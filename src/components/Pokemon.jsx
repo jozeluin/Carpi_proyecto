@@ -30,7 +30,6 @@ const Pokemon = () => {
           <img src={pokemon.sprites.front_default} alt={pokemon.name} />
           <p>Height: {pokemon.height}</p>
           <p>Weight: {pokemon.weight}</p>
-
           <br />
           {id > 1 ? (
             <button onClick={handleAnterior}>Anterior</button>

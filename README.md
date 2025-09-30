@@ -150,3 +150,10 @@ Despues hacemos una modificacion para que cuando el numero llegue a 1, el boton 
             <button disabled>Anterior</button>
           )}
 ~~~~
+
+## PokemonList ##
+Vamos a crear un nuevo componente llamado PokemonList.jsx, utilizaremos un "fetch" de la web pokeApi que nos genera 20 nombres de pokemon : [fecth utilizado](https://pokeapi.co/api/v2/pokemon?limit=20&offset=0)
+
+Si vemos en la consola al pulsar en consola para que se desplegue la salida. Vemos que nos da una url donde podemos ver los siguientes 20 porque tiene un comando de offset donde coloca 20.
+
+Aunque con la primera url tambien contiene offset y sale. Con la segunda no me sale

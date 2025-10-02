@@ -1,18 +1,12 @@
-
-import './App.css'
+import "./App.css";
+import ItemListContainer from "./components/ItemListContainer";
+import Nabvar from "./components/Nabvar";
 
 function App() {
- 
-
- 
-
-  return (
-    <>
-   
-    </>
-  )
+  return <div>
+    <Nabvar/>
+    <ItemListContainer/>
+    </div>;
 }
 
-
-
-export default App
+export default App;

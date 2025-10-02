@@ -1,70 +1,26 @@
-# JSX #
-Para poder utilizar variables JSX en nuestro codigo cuando estamos en html, tenemos que utilizar las llaves
+# Proyecto tienda
 
+Empezamos creando carpetas de components, data y helpers. En data tenemos el .json con los productos y en helpers colocaremos funciones de ayuda, como por ejemoplo las funciones de lectura del json.
 
-~~~
-const nombre="Carpi";
-return (
+## NavBar
 
-    <div className= "App">
-        <h1>{nombre}</h1>
-    </div>
-)
-~~~
+Vamos a crear un componente Navbar. Que es una nav, una barra como de herramientas en la parte superior de la pantalla. Hemos copiado su hoja de estilos, es la App.css.
+Le hemos colocado unos direccionamientos a pag web que por ahora estan vacios.
 
-tambien valdria esto:
+## Conseguir datos del data .json
 
-~~~
-const nombre=<h1>Carpi</h1>;
-return (
+Ahora vamos a crear una funcion en helpers para porder coger la informacion del .json. Creamos la funcion pediDatos.js, su funcion base sera una promesa, que rescata los datos del .json. Utilizamos una delay, retrasa los milisengundos que digamos la ejecucion del "resolve(data)"
 
-    <div className= "App">
-        {nombre}
-    </div>
-)
-~~~
-Esto tambien es correcto
-~~~
-  const nombre = <h1>Carpi2</h1>;
-  const edad=<p>27</p>
-  const email=<p>hola@carpicoder.com</p>;
-  const usuario=<div>{nombre}{edad}{email}</div>
+## Contenedor de listado de productos
 
- 
+Creamos "ItemListContainer", colocamos un useEffecta para que solo se llame una vez a "pedirdatos", que es una promesa y se resuelve correctamente, con el set cambiara el estado y llenara el array de productos.
+Ahora queremos llevar esos datos a otro componente para que se muestren.
 
-  return (
-    <>
-     <div className='App'>
-      {usuario}
-      {usuario}
-      {usuario}
+## Listado productos
 
-      </div>
-    </>
-  )
-~~~
+Ahora crearemos ItemList, el cual le pasaremos como prop el array con los productos, esta funcion recorrera el array con un .map, y le pondra un titulo.
+Entoncen entregara al siguiente componente cada objeto del array de manera indivual. El siguiente componente sera el item.
 
-## Funcion Java Script normal
-~~~
-const MostrarNombre =()=>
-{
-  return  "Carpi";
-}
-~~~
+## Item
 
-## Funcion Java Script que retorna un componente
-Los componentes en React han de empezar por mayuscula
-~~~
-
-const MostrarNombreComponentes=()=>
-{
-  return <h1>Carpi</h1>;
-}
-~~~
-
-Para poder utilizarlo lo haremos como si fuera un componente Html
-~~~
- <MostrarNombreComponentes/> 
- o
-<MostrarNombreComponentes></MostrarNombreComponentes> 
-~~~
+Aqui diseñaremos que informacion indiviual mostramos de cada objeto del array

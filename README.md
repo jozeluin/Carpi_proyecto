@@ -1,51 +1,98 @@
-# Proyecto tienda
+# Routing y navegacion #
 
-Empezamos creando carpetas de components, data y helpers. En data tenemos el .json con los productos y en helpers colocaremos funciones de ayuda, como por ejemoplo las funciones de lectura del json.
+Primero instalamos lo siguiente "npm install react-router-dom". Si vamos al package.json veremos que esta instalada la dependencia.
 
-## NavBar
+Tendremos que importar en la App.jsx lo siguient,"import { BrowserRouter, Route, Routes } from "react-router-dom";.
 
-Vamos a crear un componente Navbar. Que es una nav, una barra como de herramientas en la parte superior de la pantalla. Hemos copiado su hoja de estilos, es la App.css.
-Le hemos colocado unos direccionamientos a pag web que por ahora estan vacios.
+Nosotros queremos que al pulsar el boton de "ver mas", nos lleve a la pantalla detalles, no como  ahora que se ven los dos componentes a la vez :
 
-## Conseguir datos del data .json
+~~~~
+    <ItemListContainer/>
+    <ItemDetailContainer itemId={2}/>
+~~~~
+Ahora no tenemos configuradas las rutas y eso es lo que vamos a hacer. Tendremos una pagina con el "ItemListContainer" y otra con el "ItemDetailContainer".
 
-Ahora vamos a crear una funcion en helpers para porder coger la informacion del .json. Creamos la funcion pediDatos.js, su funcion base sera una promesa, que rescata los datos del .json. Utilizamos una delay, retrasa los milisengundos que digamos la ejecucion del "resolve(data)"
+Tendremos que encerrar toda nuestra app, nuestros componentes, con el "BrowerRouter" y colocando el elemento Routes y Route, quedando:
 
-## Contenedor de listado de productos
+~~~~
+    <BrowserRouter>
+        <Nabvar />
+        <Routes>
+          <Route path="/" element={<ItemListContainer />} />
+          <Route path="/item" element={<ItemDetailContainer itemId={2} />} />
+        </Routes>
+      </BrowserRouter>
+~~~~
+EL que tienen la barra "/" es la pagina inicial, a nosotro nos aparecera al colocar la direccion web del localhost sin nada asi "localhost:5173" o "http://localhost:5173/" y la de detalle al colocar "http://localhost:5173/item/" o "localhost:5173/item/".
 
-Creamos "ItemListContainer", colocamos un useEffecta para que solo se llame una vez a "pedirdatos", que es una promesa y se resuelve correctamente, con el set cambiara el estado y llenara el array de productos.
-Ahora queremos llevar esos datos a otro componente para que se muestren.
+Ahora vamos a crear otro componente llamado "Nosostros" y se lo vamos a agregar:
 
-## Listado productos
+~~~~
+import React from 'react'
 
-Ahora crearemos ItemList, el cual le pasaremos como prop el array con los productos, esta funcion recorrera el array con un .map, y le pondra un titulo.
-Entoncen entregara al siguiente componente cada objeto del array de manera indivual. El siguiente componente sera el item.
+const Nosotros = () => {
+  return (
+    <h1>Nosotros</h1>
+  )
+}
 
-## Item ##
+export default Nosotros
+~~~~
 
-Aqui diseñaremos que informacion indiviual mostramos de cada objeto del array. Tenemos que destacar que en el componente "a", colocamos un añadido para la direccion web, es decir a la direccion actual le agregamos lo de dentro del href.
+App.jsx:
+~~~~
+    <Route path="/" element={<ItemListContainer />} />
+    <Route path="/item" element={<ItemDetailContainer itemId={2} />} />
+    <Route path="/nosotros" element={<Nosotros />} />
+~~~~
 
-## ItemDetailContainer ##
+AL haver colocado la navbar fuera pero dentro del BrowserRouter, el navbar aparecera en todas las paginas. Tambien podriamos colocar un footer. Aunque hay maneras que estos elementos no salgan si se quiere aunque no lo vamos a ver.
 
-Aqui colocaremos los detalles de cada producto. Necesitaremos una funcion axiliar dentro de la carpeta "helpers", que nos proporcione una los datos de un producto en concreto,"PedirItemPorId"
+Ahora vamos a ver como podemos ir de pagina en pagina si tener que navegar mediante el navegador ni recargar la pagina cada vez.
 
-> **PedirItemPorId**  
-> Aqui utilizamos una promesa y el comando find, el pasamos por props el id y 
-> lo comparamos con el data.json. Si consigue el item en el if se resulve la promesa
+Para empezar podriamos hacer que el navbar Funcione.
 
-Volvemoa al ItemDetailContainer y con ya el item actualizado se lo damos a un nuevo componente, ItemDetail
+## Navbar Funcional ##
 
-## ItemDetail ##
-Aqui y mostramos todos los conceptos del item
+Hacemos los siguienes cambios en el comoponente navbar:
 
-Vamos a dar un repaso del todo el programa
+~~~~
+ <nav className="navbar">
+      <a href="#" className="logo"><h1>Carpichop</h1></a>
+      <ul className="menu">
+        <li><a className="menu-link" href="/"> Inicio</a></li>
+        <li><a className="menu-link" href="nosotros">Nosotros</a></li>
+        <li><a className="menu-link" href="#">Productos</a></li>
+        <li><a className="menu-link" href="#">Contacto</a></li>
+      </ul>
+    </nav>
+~~~~
 
-1. App.jsx -> ItemDetailContainer con props=itemId
-2. ItemDetailContainer -> pedirItemPorId(itemId)->Buscamos el item y lo pasamos->ItemDetail props=item
-3. ItemDetail -> Mostramos detalle item
+Ya podemos navegar aunque sea a "inicio" y a "nosotros". Vemos que al pulsar se navega entre esas paginas recargando la pagina.
+Aunque nosotro no queremos que se recargen de esa manera, ese va ser nuestro nuevo cambio. 
+Para ello utilizaremos un nuevo componente llamado "Link" en vez de las "a", este comoponente lo proporciona react-router-dom:
 
-Ahora lo que haremos en la siguiente clase es que dentro de la lista de productos que muestra ItemLisContainer, al darle click en ver mas, nos lleve a ItemDetailContainer. Ahora al final al descomentar los dos componentes dentro de App.jsx. En la pantalla se vera toda la lista y al final el detalle del producto con itemId=2.
+~~~~
+  <nav className="navbar">
+      <Link to="/" className="logo"><h1>Carpichop</h1></to>
+      <ul className="menu">
+        <li><Link className="menu-link" to="/"> Inicio</Link></li>
+        <li><Link className="menu-link" to="nosotros">Nosotros</Link></li>
+        <li><Link className="menu-link" to="#">Productos</Link></li>
+        <li><Link className="menu-link" to="#">Contacto</Link></li>
+      </ul>
+    </nav>
+~~~~
 
-En la siguiente rama veremos tambien el routeo, la forma de navegar entre paginas sin tener que recargar la pagina, usando routeDom.
+Como vemos tambien tenemos que cambiar los "href" por los "to". Ahora ya no se recarga la pagina.
 
-
+Tambien en el Item.jsx, lo modificamos:
+~~~~
+<div>
+        <h4>{producto.titulo}</h4>
+        <p>Precion:${producto.precio}</p>
+        <p>Categoria:{producto.categoria}</p>
+        <Link className="ver-mas" to={`/item/`}>Ver mas</Link> // Colocamos Link y to={`/item/`}
+      </div>
+~~~~
+El "to" dejamos asi "/item/", ya que es ruta.

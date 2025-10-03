@@ -2,16 +2,23 @@ import "./App.css";
 import ItemListContainer from "./components/ItemListContainer";
 import Nabvar from "./components/Nabvar";
 import ItemDetailContainer from "./components/ItemDetailContainer";
-
-
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Nosotros from "./components/Nosotros";
 
 function App() {
-  return <div>
-    <Nabvar/>
-    <ItemListContainer/>
-    <ItemDetailContainer itemId={2}/>
-
-    </div>;
+  return (
+    <div>
+      <BrowserRouter>
+        <Nabvar />
+        <Routes>
+          <Route path="/" element={<ItemListContainer />} />
+          <Route path="/item" element={<ItemDetailContainer itemId={2} />} />
+          <Route path="/nosotros" element={<Nosotros />} />
+        </Routes>
+      
+      </BrowserRouter>
+    </div>
+  );
 }
 
 export default App;

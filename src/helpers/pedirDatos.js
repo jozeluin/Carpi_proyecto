@@ -15,6 +15,7 @@ export const pedirItemPorId = (id) => {
     const item = data.find((el) => el.id === id);
     
     if (item) {
+      console.log("Se encontro el item",item);
       resolve(item);
     } else {
       reject({

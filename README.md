@@ -96,3 +96,38 @@ Tambien en el Item.jsx, lo modificamos:
       </div>
 ~~~~
 El "to" dejamos asi "/item/", ya que es ruta.
+
+## Ahora vamos hacer que el boton "ver mas" funcione correctamente ##
+
+Vamos a colocar parametros dentro de las rutas en el Router-Dom. Para poder hacer esto lo tendremos que hacer capturando el "id" de la url, todo empezara dentro de las rutas.
+
+~~~~
+<Route path="/item/:id" element={<ItemDetailContainer  />} />// Quitamos "itemId={2}" y colocamos "/item/:id" este id sera dinamico
+~~~~
+
+Lo tenemos que capturar en el ItemDetailContainer y utilizaremos un Hook nuevo, useParams():
+
+~~~~
+const ItemDetailContainer = () => {
+  const [item, setItem] = useState(null);
+  const id = useParams().id;
+  console.log(id);
+
+  useEffect(() => {
+    pedirItemPorId(Number(id))
+      .then((res) => {
+      setItem(res);
+    });
+  }, [id]);
+
+  return <div>{item && <ItemDetail item={item} />}</div>;
+};
+
+~~~~
+useParams().id, devolvera un string por eso tenemos que pasarlo a Number un poco mas abajo.
+
+Despues en item:
+~~~~
+<Link className="ver-mas" to={`/item/${producto.id}`}>Ver mas</Link>
+~~~~
+Colocamos en "to" el final de la direccion con "producto.id". Y Ahora ya al pulsar en "ver mas" nos mostrara en pantalla el "ItemDetailContainer" que corresponda

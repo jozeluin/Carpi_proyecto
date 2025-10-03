@@ -12,7 +12,7 @@ function App() {
         <Nabvar />
         <Routes>
           <Route path="/" element={<ItemListContainer />} />
-          <Route path="/item" element={<ItemDetailContainer itemId={2} />} />
+          <Route path="/item/:id" element={<ItemDetailContainer/>} />
           <Route path="/nosotros" element={<Nosotros />} />
         </Routes>
       

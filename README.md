@@ -130,4 +130,60 @@ Despues en item:
 ~~~~
 <Link className="ver-mas" to={`/item/${producto.id}`}>Ver mas</Link>
 ~~~~
-Colocamos en "to" el final de la direccion con "producto.id". Y Ahora ya al pulsar en "ver mas" nos mostrara en pantalla el "ItemDetailContainer" que corresponda
+Colocamos en "to" el final de la direccion con "producto.id". Y Ahora ya al pulsar en "ver mas" nos mostrara en pantalla el "ItemDetailContainer" que corresponda.
+
+
+Bien ahora lo siguiente que vamos a ha hacer es navegar por categoorias.
+
+Primer cambiamos la navbar, vamos a colocar otros nombres, con sus destinos
+
+~~~~
+<ul className="menu">
+        <li><Link className="menu-link" to="/"> Inicio</Link></li>
+        <li><Link className="menu-link" to="/productos">Productos</Link></li>
+        <li><Link className="menu-link" to="/productos/medias">Medias</Link></li>
+        <li><Link className="menu-link" to="/productos/pantalones">Pantalones</Link></li>
+        <li><Link className="menu-link" to="/productos/remeras">Remeras</Link></li>
+        <li><Link className="menu-link" to="/productos/buzos">Buzo</Link></li>
+      </ul>
+~~~~
+Ahora mismo al pulsar cambia la url.
+
+Ahora modificamos App.jsx:
+~~~~
+<Routes>
+           <Route path="/" element={<ItemListContainer />} />
+          <Route path="/item/:id" element={<ItemDetailContainer/>} />
+           <Route path="/productos/" element={<ItemListContainer />} />
+          <Route path="/productos/:categoria" element={<ItemListContainer />} />
+          <Route path="/nosotros" element={<Nosotros />} />
+        </Routes>
+~~~~
+Hemos tambien colocado una ruta con productos sin categoria para que si al pulsar sale undifined, podramos confirarlo y llevarlo para que nos salgan los productos
+
+Ahora en ItemListContainer podremos capturar la categoria:
+
+~~~~
+const ItemListContainer = () => {
+  const [productos, setProductos] = useState([]);
+  const categoria=useParams().categoria;
+  console.log(categoria);
+ 
+~~~~
+Ahora al pulsar en el navbar la categoria , en inspeccionar en la consola se vera la categoria que pulsamos
+
+Bien ahora cambiaremos "ItemLisContainer", para que en el useEffect nos filtre la categoria:
+~~~~
+  useEffect(() => {
+    pedirDatos().then((res) => {// res es el resultado de pedirDatos ya que es el resultado de una promesa
+      if(categoria){
+        setProductos(res.filter(producto=>producto.categoria===categoria));
+      } else {  //Ruta sin parametros
+        setProductos(res);
+      } 
+
+      
+    });
+  }, [categoria]);
+~~~~
+Fijate que ahora utlizamos el hecho que tengamos una ruta con productos sin parametros, al pulsar "Productos"  como en la ruta no tiene ningun paramentro el programa ejecutara el else dandonos todos los productos

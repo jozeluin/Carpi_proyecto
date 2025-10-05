@@ -186,4 +186,77 @@ Bien ahora cambiaremos "ItemLisContainer", para que en el useEffect nos filtre l
     });
   }, [categoria]);
 ~~~~
-Fijate que ahora utlizamos el hecho que tengamos una ruta con productos sin parametros, al pulsar "Productos"  como en la ruta no tiene ningun paramentro el programa ejecutara el else dandonos todos los productos
+Fijate que ahora utlizamos el hecho que tengamos una ruta con productos sin parametros, al pulsar "Productos"  como en la ruta no tiene ningun paramentro el programa ejecutara el else dandonos todos los productos.
+
+Ahora vamos a hacer que el titulo cambie, en vez de poner productos que ponga el nombre de la categoria.
+Hemos de cambiar lo que enviamos al componente ItemList, para ello vamos a ItemListContainer.
+Alli crearemos un nuevo estado, con el titulo. I lo que queremos es que si hay una categoria se cambie con el nombre de la categoria. I al final entregarsela como una prop a ItemList:
+~~~~
+const ItemListContainer = () => {
+  const [productos, setProductos] = useState([]);
+  const [titulo, setTitulo] = useState("Productos");
+  const categoria=useParams().categoria;
+  
+ 
+
+  useEffect(() => {
+    pedirDatos().then((res) => {
+      if(categoria){
+        setProductos(res.filter(producto=>producto.categoria===categoria));
+        setTitulo(categoria);
+      } else {
+        setProductos(res);
+      } 
+    });
+  }, [categoria]);
+~~~~
+
+Y en ItemList:
+
+~~~~
+const ItemList = ({ productos, titulo }) => {
+  
+  return (
+    <div className="container">
+      <h2 className="main-title">
+        {titulo}
+        <div className="productos">
+            {productos.map((prod) => <Item producto={prod} key={prod.id} />)}
+        </div>
+      </h2>
+    </div>
+  );
+};
+~~~~
+
+Tenemos un error, ya que cuando volvemos a productos no cambia a "Productos". Lo que tenemos que hacer en ItemListContainer, en el "else", cunado categoria sea undifined, setear titulo a "Productos"
+~~~~
+} else {
+        setProductos(res);
+        setTitulo("Productos");
+      } 
+~~~~.
+
+Vemos que las categorias colocan los titulos empezando con miniscula. Carpi a utilizado chatGpt y le ha proporcionado una funcion. Asi que en la capeta "helpers", vamos crear alli la funcion " toCapital"
+
+toCapital.js
+~~~~
+export function toCapital(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+~~~~
+
+I en ItemList :
+~~~~
+  <div className="container">
+      <h2 className="main-title">
+        {toCapital(titulo)}
+        <div className="productos">
+            {productos.map((prod) => <Item producto={prod} key={prod.id} />)}
+        </div>
+      </h2>
+    </div>
+~~~~
+
+
+Para finalizar hay que saber que "navbar", el componente, en App.jsx, a de estar dentro del componente "BrowserRouter", ya que "navbar" utliza "Link" , todo lo que utilize "Link", tiene que estar dentro del comoponente "BrowserRouter".

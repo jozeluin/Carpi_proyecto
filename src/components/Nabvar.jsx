@@ -13,6 +13,7 @@ const Nabvar = () => {
         <li><Link className="menu-link" to="/productos/remeras">Remeras</Link></li>
         <li><Link className="menu-link" to="/productos/buzos">Buzo</Link></li>
         <li><Link className="menu-link" to="/nosotros">Nosotros</Link></li>
+        <li><Link className="menu-link" to="/contacto">Contacto</Link></li>
       </ul>
     </nav>
   );

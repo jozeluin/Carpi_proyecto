@@ -1,7 +1,15 @@
 import React, { useState } from 'react'
 import ItemCount from './ItemCount'
+import { CartContext } from '../context/CartContext';
 
 const ItemDetail = ({item}) => {
+    // const {user,edad}=useContext(CartContext)
+    // console.log("ItemDetail context" , user,edad);
+
+    const {carrito,setCarrito}=React.useContext(CartContext)
+    console.log("ItemDetail context" , carrito,setCarrito);
+    
+
     const[cantidad, setCantidad] = useState(1)
 
     const handleRestar=()=>{

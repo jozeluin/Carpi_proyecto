@@ -5,10 +5,20 @@ import ItemDetailContainer from "./components/ItemDetailContainer";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Nosotros from "./components/Nosotros";
 import Contacto from "./components/Contacto";
+import { useState } from "react";
+import { CartContext } from "./context/CartContext";
 
 function App() {
+
+  const [carrito, setCarrito] = useState([]);
+
+
   return (
+
+    
     <div>
+      <CartContext.Provider value={{carrito,setCarrito}}>
+     
       <BrowserRouter>
         <Nabvar />
         <Routes>
@@ -21,6 +31,7 @@ function App() {
         </Routes>
       
       </BrowserRouter>
+      </CartContext.Provider>
     </div>
   );
 }

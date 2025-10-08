@@ -160,4 +160,106 @@ const Contacto = () => {
 
 export default Contacto;
  ~~~~
- Ahora vuelve a pasar lo mismo que antes. Se imprimen en consola de una en una, y no se guarda....13:21
+ Ahora vuelve a pasar lo mismo que antes. Se imprimen en consola de una en una, y no se guarda. Para que esto no ocurra nos vamos a ayudar de un elemento de los inputs, el "name". Este name sera el mismo que utilizemos en el useState.
+ 
+ ~~~~
+      const handlValores = (e) => {
+        console.log(e.target.name)
+    }
+    .
+    .
+    .
+     <input
+         type="text"
+        placeholder="Ingresa tu nombre" 
+        value={valores.nombre}
+        onChange={handlValores}
+        name="nombre"
+        />
+
+        <input 
+        type="email" 
+        placeholder="Ingresa tu email"
+        value={valores.email}
+        onChange={handlValores}
+        name="email"
+        />
+ ~~~~
+
+ Ahora cuando nosotros pulsemos letras dentro de los campos, en consola aparecera el nombre que hayamos puesto en "name".
+
+ Partiendo de eso :
+ ~~~~
+    const handlValores = (e) => {
+        setValores({
+            ...valores,
+            [e.target.name]: e.target.value,
+        });
+    }
+ ~~~~
+
+ Cada vez que hay un cambio en los inputs, por el onChange, se setea Valores con todo lo que habia en valores (...valores), mas la modificacion de la propiedad (e.target.name), que es el "nombre" o el "email", de useState. Con el valor de e.target.value, en el correspondiente. Ahora si rellenamos y le damos a enviar, vemos que se envia correctamente. Ahora seria muy sencillo agregar un nuevo campo al formulario.
+
+ ~~~~
+
+    
+    const[valores, setValores] = useState({ 
+        nombre:"",
+        email:"",
+        telefono:""
+    });
+    .
+    .
+    .
+
+     <input 
+        type="email" 
+        placeholder="Ingresa tu email"
+        value={valores.email}
+        onChange={handlValores}
+        name="email"
+        />
+         <input 
+        type="telefono" 
+        placeholder="Ingresa tu telefono"
+        value={valores.telefono}
+        onChange={handlValores}
+        name="telefono"
+        />
+ ~~~~
+
+ ## Nivel 3, de formularios ##
+
+ La mejor manera de manejar formularios es con una libreria. La libreria es la siguiente "npm install react-hook-form".
+ No hace falta ni el value, ni el onChange, ni el name. Tambien borramos el onSubmit del formulario y todas la funciones y estados.
+
+ ~~~~
+import { useForm } from "react-hook-form";
+
+const Contacto = () => {
+   const { register, handleSubmit } = useForm();//necesitamos las dos funciones "register" y "handleSubmit"
+
+    const enviar = (data) => {
+      console.log("Formulario enviado",data);//en data esta lo que enviamos
+    }
+
+  return (
+    <div className="container">
+      <h1 className="main-title">Contacto</h1>
+      <form className="formulario" onSubmit={handleSubmit(enviar)}>//Al darle a enviar llama a esta funcion
+
+        <input type="text"placeholder="Ingresa tu nombre" {...register("nombre")}/>//con spread+register+nombre del campo, 
+        //identificamos campo
+        <input type="email" placeholder="Ingresa tu email"{...register("email")}/>
+        <input type="telefono" placeholder="Ingresa tu telefono"{...register("telefono")}/>
+
+        <button className="enviar" type="submit">
+          Enviar
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default Contacto;
+ ~~~~

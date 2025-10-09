@@ -52,8 +52,9 @@ return (
 ~~~~
 Ahora user ya se puede compartir, y como lo utlizo:
 
+
 Por ejemplo en ItemDetail.jsx:
-~~~~~
+~~~~
 const ItemDetail = ( {item) ) => {
 const user = useContext (CartContext);
 console. log(user) ;
@@ -74,5 +75,86 @@ const {user,edad}=useContext(CartContext)//Tambien valdria const user = useConte
 ~~~~
 
 
-Bueno todo esto a sido un ejemplo borramos todo esto. Volvemos a App.jsx, colocamos en el provider "carrito" y "setCarrito".
-Despues nos vamos a ItemDetail, ya que tenemos que darle funcionalidades al boton "Agregar Carrito". Y recibiran el carrito y el setCarrito......11:49
+Bueno todo esto a sido un ejemplo borramos todo esto. Volvemos a App.jsx, colocamos en el provider "carrito" y "setCarrito".Despues nos vamos a ItemDetail, ya que tenemos que darle funcionalidades al boton "Agregar Carrito". Y recibiran el carrito y el setCarrito.
+
+ItemDetail.jsx
+~~~~~~
+ const handleAgregar=()=>{
+        const itemAgregado={...item, cantidad}
+        setCarrito([...carrito, itemAgregado])
+
+    }
+~~~~~~
+Pero al hacer esto vamos agregando lo que ya esta agregado una y otra vez y eso no es lo que queremos, queremos que se sume la nueva cantidad.
+
+ItemDetail.jsx
+~~~~
+ const handleAgregar = () => {
+    const itemAgregado = { ...item, cantidad };
+    const estaEnCarrito=carrito.find((producto) => producto.id === itemAgregado.id)
+
+    if (estaEnCarrito) {
+      console.log("El producto ya fue agregado");
+    } else {
+      console.log("No se encontro el producto");
+    }
+    setCarrito([...carrito, itemAgregado]);
+  };
+~~~~
+Ahora hace una comprobacion para saber si ya se agrego.
+
+Ahora vamos hacer que sume si ya se agrego:
+
+~~~~
+  const handleAgregar = () => {
+    const itemAgregado = { ...item, cantidad };
+
+    const nuevoCarrito = [...carrito];
+    const estaEnCarrito=nuevoCarrito.find((producto) => producto.id === itemAgregado.id)
+
+    if (estaEnCarrito) {
+        estaEnCarrito.cantidad += cantidad;
+        setCarrito(nuevoCarrito);
+      console.log("El producto ya fue agregado");
+    } else {
+      console.log("No se encontro el producto");
+      setCarrito([...carrito, itemAgregado]);
+    }
+    
+  };
+~~~~
+
+Simplificando :
+~~~~
+.
+.
+  if (estaEnCarrito) {
+      estaEnCarrito.cantidad += cantidad;
+    } else {
+      nuevoCarrito.push(itemAgregado);
+    }
+    setCarrito(nuevoCarrito);
+  };
+~~~~
+
+Como la funcion agregar pertenece masval contexto. Vamos a cambiarla de sitio. La vamos a colocar en App.jsx.
+Ahora la logica de agregarALCarrito(le hemos cambiado el nombre de "handleAgregar" por agregarAlCarrito) esta en App.jsx.
+Ahy que decir que en ItemDetail, dentro del componente "ItemCount", donde llamamos a "agregarAlCarrito". Esta funcion tiene argumentos y no se puede llamar asi " handleAgregar={(agregarAlCarrito(item, cantidad)}", por que React no te lo permite, lo haremos con una funcion anonima:
+ItemDetail.jsx
+~~~~
+.
+.
+ <ItemCount
+            cantidad={cantidad}
+            handleRestar={handleRestar}
+            handleSumar={handleSumar}
+            handleAgregar={() => agregarAlCarrito(item, cantidad)}
+          />
+.
+.
+
+~~~~
+
+## Creacion de Componente Widget ##
+
+Vamos a mostrar el carrito en un widget. Creamos el componente "CardWidget"

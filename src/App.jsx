@@ -11,13 +11,29 @@ import { CartContext } from "./context/CartContext";
 function App() {
 
   const [carrito, setCarrito] = useState([]);
+  
+  const agregarAlCarrito = (item,cantidad) => {
+    const itemAgregado = { ...item, cantidad };
+
+    const nuevoCarrito = [...carrito];
+    const estaEnCarrito = nuevoCarrito.find(
+      (producto) => producto.id === itemAgregado.id
+    );
+
+    if (estaEnCarrito) {
+      estaEnCarrito.cantidad += cantidad;
+    } else {
+      nuevoCarrito.push(itemAgregado);
+    }
+    setCarrito(nuevoCarrito);
+  };
 
 
   return (
 
     
     <div>
-      <CartContext.Provider value={{carrito,setCarrito}}>
+      <CartContext.Provider value={{carrito,agregarAlCarrito}}>
      
       <BrowserRouter>
         <Nabvar />

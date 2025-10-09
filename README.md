@@ -157,4 +157,56 @@ ItemDetail.jsx
 
 ## Creacion de Componente Widget ##
 
-Vamos a mostrar el carrito en un widget. Creamos el componente "CardWidget"
+Vamos a mostrar el carrito en un widget. Creamos el componente "CardWidget".
+CartWidget.jsx:
+~~~~
+const CartWidget = () => {
+  return (
+    <div>
+      <Link className="menu-link" to="/carrito">
+       Carrito
+       <span className="numerito"> 0</span>
+      </Link>
+    </div>
+  );
+};
+
+export default CartWidget;
+~~~~
+Y lo agregamos a la "Navbar.jsx":
+~~~~
+.
+.
+<li><CartWidget/></li>
+.
+.
+~~~~
+Claro lo que queremos es que cada vez que aumentamos el carrito se vea reflejado.
+En App.jsx, creamos una nueva funcion:
+~~~~
+const cantidadEnCarrito=()=>{
+    return carrito.reduce((acc, prod) => acc + prod.cantidad, 0);//reduce recorre el array y acumula. En este caso acumula la cantidad de productos en el carrito
+  }
+~~~~
+Y  ahora esto lo llamaremos en Cartwidget:
+~~~~
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
+import { CartContext } from "../context/CartContext";
+
+const CartWidget = () => {
+  const { cantidadEnCarrito } = useContext(CartContext);
+  return (
+    <div>
+      <Link className="menu-link" to="/carrito">
+        Carrito
+        <span className="numerito"> {cantidadEnCarrito()}</span>
+      </Link>
+    </div>
+  );
+};
+
+export default CartWidget;
+~~~~
+
+Ahora lo que necesitamos es que cuando pulsemos carrito nos lleve a una ruta hasta el carrito...27:34

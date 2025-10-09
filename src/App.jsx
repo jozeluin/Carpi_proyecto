@@ -11,7 +11,7 @@ import { CartContext } from "./context/CartContext";
 function App() {
 
   const [carrito, setCarrito] = useState([]);
-  
+
   const agregarAlCarrito = (item,cantidad) => {
     const itemAgregado = { ...item, cantidad };
 
@@ -28,12 +28,15 @@ function App() {
     setCarrito(nuevoCarrito);
   };
 
+  const cantidadEnCarrito=()=>{
+    return carrito.reduce((acc, prod) => acc + prod.cantidad, 0);//reduce recorre el array y acumula. En este caso acumula la cantidad de productos en el carrito
+  }
 
   return (
 
     
     <div>
-      <CartContext.Provider value={{carrito,agregarAlCarrito}}>
+      <CartContext.Provider value={{carrito,agregarAlCarrito,cantidadEnCarrito}}>
      
       <BrowserRouter>
         <Nabvar />

@@ -209,4 +209,122 @@ const CartWidget = () => {
 export default CartWidget;
 ~~~~
 
-Ahora lo que necesitamos es que cuando pulsemos carrito nos lleve a una ruta hasta el carrito...27:34
+Ahora lo que necesitamos es que cuando pulsemos carrito nos lleve a una ruta hasta el carrito...27:34.
+Vamos a App.jsx y agregamos una nueva "Route" con Carrito, y creamos un nuevo componente llamado carrito. Ese componente mostrara los datos de las cosas que vamos adquiriendo.
+Ahora mismo mientras vamos añadiendo cosas al carrito, vamos creando un array. Con ayuda del Cartcontext y useContext, podremos llegar en carrito a ese array.
+Y con un .map lo recorreremos:
+Carrito.jsx
+~~~~
+           <div className='container'>
+        <h1 className='main-title'>Carrito</h1>
+        {
+            
+            carrito.map((prod)=>(
+              <div key={prod.id}>
+                  <h2>{prod.titulo}</h2>
+                  <p>Precio unit: ${prod.precio}</p>
+                  <p>Precio total: ${prod.precio * prod.cantidad}</p>
+                  <p>Cant:{prod.cantidad}</p>
+              </div>
+            ))
+        }
+        </div>
+~~~~
+Ahora queremos agregar el precio total de todo el carrito. Antes para ello crearemos una funcion en App.jsx para ese cometido:
+App.jsx:
+~~~~
+ const precioTotal = () => {
+    return carrito.reduce((acc, prod) => acc + prod.cantidad * prod.precio, 0); //acumula el precio total del carrito
+  }
+
+  return (
+    <div>
+      <CartContext.Provider
+        value={{ carrito, agregarAlCarrito, cantidadEnCarrito, precioTotal }}
+      >
+~~~~
+Y se lo agregamos a nuestro cartContext. Una vez en Carrito.jsx. Se lo agregamos a nuestra destructuracion de useContext y ya lo podemos utilizar en cualquier parte de Carrito.jsx.
+Carrito.jsx:
+~~~~
+.
+.
+
+const Carrito = () => {
+    const {carrito,precioTotal}=useContext(CartContext)
+.
+.
+       </div>
+            ))
+        }
+        <h2>Precio Totatl:${precioTotal()}</h2>
+        </div>
+  )
+
+~~~~
+Ten encuenta que si no colocas "${precioTotal()}" con parentesis, la funcion no se ejecutara.
+
+Ahora vamos agregar un boton para vaciarCarrito, debajo del precio Total. La funcion estara en App.jsx y tambien se la pasaremos a traves del CartContext. El onclick del boton actuara una funcion que a su vez actuara a vaciarCarrito.
+Ademas agregamos una pequeña logica para que solo se visualize el precio total, solo si hemos cogido algo.
+Carrito.jsx:
+~~~~
+const Carrito = () => {
+  const { carrito, precioTotal,vaciarCarrito } = useContext(CartContext);
+
+  const handleVaciar = () => {
+    vaciarCarrito();
+  }
+  return (
+    <div className="container">
+      <h1 className="main-title">Carrito</h1>
+      {carrito.map((prod) => (
+        <div key={prod.id}>
+          <h2>{prod.titulo}</h2>
+          <p>Precio unit: ${prod.precio}</p>
+          <p>Precio total: ${prod.precio * prod.cantidad}</p>
+          <p>Cant:{prod.cantidad}</p>
+          <br />
+        </div>
+      ))}
+
+        {
+        carrito.length > 0 ?
+        <>
+        <h2>Precio Total: ${precioTotal()}</h2>
+        <button onClick={handleVaciar}>Vaciar</button>
+        </>:
+        <h2>No hay productos en el carrito :( </h2>
+        
+      }
+    </div>
+  );
+};
+
+export default Carrito;
+
+~~~~
+
+## Centralizando todo el contexto ##
+
+Nuestro CartContext.jsx esta vacio, tenemos que utilizarlo y todo nuestro CartContext lo tenemos que llevar alli. Todo lo que havia desde el principio hasta el return en la App.jsx, pasa a CartContext . 
+Entonces con todo eso, creamos un componente CarProvider con un argumento "chidren".
+Mas abajo en el return devolvemos ese componente con todos sus argumentos (como antes, cuando se llamaba CarContext), y en medio del principio y el final del componente, colocamos "{children}". Depues en App.jsx
+envolvemos el resto de componentes con el compoente "CartProvider". 
+Lo que conseguimos con "children" es que todo lo que ponemos dentro de "CartProvider" actue como su children.
+
+De esta manera hemos centralizado todo el CartContext
+
+## LocalStorage ##
+Para que al actualizar no se borre todo.
+Creamos En CartContext.jsx, "carritoInicial", el cual busca un item de "carrito", si no hubiera colocaria una array vacio.
+CartContext.jsx
+~~~~
+const carritoInicial = JSON.parse(localStorage.getItem("carrito")) || [];
+~~~~
+
+Despues creamos un "useEffect", que cuando se monte o cambie el estado del carrito, se guarde un item denominado "carrito" que contenga el interior del array carrito
+~~~~
+ useEffect(() => {
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+  }, [carrito]);    
+~~~~
+Si vamos a inspeccionar, en almacenamiento local, (dentro de aplicacion), podremos ver como se guarda y aunque se actualize, no se borra la info.

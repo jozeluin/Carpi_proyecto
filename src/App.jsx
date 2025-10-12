@@ -5,52 +5,26 @@ import ItemDetailContainer from "./components/ItemDetailContainer";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Nosotros from "./components/Nosotros";
 import Contacto from "./components/Contacto";
-import { useState } from "react";
-import { CartContext } from "./context/CartContext";
+import { CartProvider } from "./context/CartContext";
+import Carrito from "./components/Carrito";
 
 function App() {
-
-  const [carrito, setCarrito] = useState([]);
-
-  const agregarAlCarrito = (item,cantidad) => {
-    const itemAgregado = { ...item, cantidad };
-
-    const nuevoCarrito = [...carrito];
-    const estaEnCarrito = nuevoCarrito.find(
-      (producto) => producto.id === itemAgregado.id
-    );
-
-    if (estaEnCarrito) {
-      estaEnCarrito.cantidad += cantidad;
-    } else {
-      nuevoCarrito.push(itemAgregado);
-    }
-    setCarrito(nuevoCarrito);
-  };
-
-  const cantidadEnCarrito=()=>{
-    return carrito.reduce((acc, prod) => acc + prod.cantidad, 0);//reduce recorre el array y acumula. En este caso acumula la cantidad de productos en el carrito
-  }
-
   return (
-
-    
     <div>
-      <CartContext.Provider value={{carrito,agregarAlCarrito,cantidadEnCarrito}}>
-     
-      <BrowserRouter>
-        <Nabvar />
-        <Routes>
-          <Route path="/" element={<ItemListContainer />} />
-          <Route path="/item/:id" element={<ItemDetailContainer/>} />
-           <Route path="/productos/" element={<ItemListContainer />} />
-          <Route path="/productos/:categoria" element={<ItemListContainer />} />
-          <Route path="/nosotros" element={<Nosotros />} />
-          <Route path="/contacto" element={<Contacto />} />
-        </Routes>
-      
-      </BrowserRouter>
-      </CartContext.Provider>
+      <CartProvider>
+        <BrowserRouter>
+          <Nabvar />
+          <Routes>
+            <Route path="/" element={<ItemListContainer />} />
+            <Route path="/item/:id" element={<ItemDetailContainer />} />
+            <Route path="/productos/" element={<ItemListContainer />} />
+            <Route path="/productos/:categoria" element={<ItemListContainer />} />
+            <Route path="/nosotros" element={<Nosotros />} />
+            <Route path="/contacto" element={<Contacto />} />
+            <Route path="/carrito" element={<Carrito />} />
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
     </div>
   );
 }

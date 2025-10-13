@@ -313,7 +313,7 @@ Lo que conseguimos con "children" es que todo lo que ponemos dentro de "CartProv
 
 De esta manera hemos centralizado todo el CartContext
 
-## LocalStorage ##
+## LocalStorage 
 Para que al actualizar no se borre todo.
 Creamos En CartContext.jsx, "carritoInicial", el cual busca un item de "carrito", si no hubiera colocaria una array vacio.
 CartContext.jsx

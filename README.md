@@ -1,330 +1,116 @@
-# Context y LocalStorage #
+# Firebase
+Vamos a ver como se trabaja con Firebase, en particular con Firestore.
 
-Vamos a crear el carrito con todas sus funcionalidades. Este carrito tendra que tener un estado global para que desde cada uno de los articulos se pueda acceder. Para ello utlizaremos "context", a traves de el le podremos pasar funcionalidades a cada elemento que lo necesite, envolvera a la aplicacion.
+Primero tenemos que ir aqui Firebase: https://firebase.google.com. Dentro buscamos "empezar ahora". Y le damos a crear Proyecto, le damos un nombre.
+ En este caso hemos puesto lo mismo que carpi, "CarpiShop", y quitamos por ahora las herramientas de "analitics". Le damos a crear proyecto.
+ Una vez que haya terminado , en compilacion le damos a Firestore database, lo que vamos a utilizar. Creamos la base de datos, todo lo cojemos por defecto y lo unico que elegimos es que sea en modo de prueba. Una vez que se haya creado, lo primero que hacemos es en reglas cambiar la fecha de caducidad de la base de datos, y publicamos.
+ Volvemos a datos y vamos a empezar a crear nuestra base de datos. Tenemos que pensar que tenemos que crear la base de datos que teniamos en formato .json.
+ 
+ Ahora la haremos a mano, tendremos que crear  uno a uno los registros. Mas adelante veremos una manera mas automatica para cargar todo esto.
 
-Creamos una nueva carpeta src/context y dentro el nuevo componente CartContext.jsx.
-CartContext.jsx:
+ Colecciones == Array    Documentos == cada objeto del Array
+
+ La coleccion la llamaremos productos, una vez que lo indiquemos nos dira que vayamos introducciendo documentos (objetos del array, o registros).
+ Pulsamos a id automatico, y vamos introduciendo los titulos de campo, con su tipo de dato y el dato.
+
+ Una vez que hemos pasado nuestro documentos .json a firebase, vamos a ver como conectamos firebase con nuestra  App web.
+ Pulsamos en la casita de inicio, y pulsamos a crear app, y despues a sitio web.
+ Le damos un nombre a nuestra app, le damos CarpiShop Web, no pulsamos firebase hosting y si pulsamos a registrar app. Alli primero tenemos que instalar las dependencias de firebase en nuestro proyecto, lo podemos hacer mediante npm o sript y despues tenemos que poner un codigo en nuestro proyecto.
+ Creamos una carpeta y un archivo: src/firebase/config.js.
+
+ Una vez que hemos instalado firebase podemos utlizar unas serie de funciones que nos da.  Ahora tenemos que pegar el codigo que nos ofrece dentro de config.js.ESe archivo nos trae toda la configuracion de nuestro proyecto que creamos de firebase.
+
+ Dentro de config.js, importamos "getFirestore", para poder rescatar nuestra base de datos de firestore. Creamos una constante para poder recuperar la info:
+ config.js:
+ ~~~~
+    export const db = getFirestore(app);
+ ~~~~
+
+Apartir de ahora, esa constante es la que va a representar nuestra base de datos.
+
+## Usar los datos de la base de datos
+
+Nos vamos a "ItemListContainer", y el useEffetct borramos sus interior, dejando solo el par de cochetes con categoria, para que cambie si cambia el estado de categoria. Despues tenemos que importar unas cosas. 
+- Primero importamos  "collection", ya que de la base de datos "db" nos interesa una coleccion en particular, si hubiera mas podriamos elegir cual. Aunque en nuestro caso solo hay una. Despues tambien importamos "db".
+
+Para crear la referencia a la colecion:
+ItemListContainer.jsx
 ~~~~
-
-export const CartContext = createContext();
+const productosRef = collection(db, "productos");//db es la base de datos, y "productos" es la coleccion que queremos
 ~~~~
-
-Despues en App.jsx, envolvemos la aplicacion con ese componente pero ademas hay que colocar ".Provider".
-Ademas tenemos que crear un estado.
-App.jsx
+Ahora hay que hacer un pedido asiscronico a firestore para que nos traiga la informacion de la base de datos de esta collecion  en particular. Para eso importamos tambien "getDocs" que lo que hacer es traernos los documentos de la coleccion que le pidamos.
+ItemListContainer.jsx
 ~~~~
+  useEffect(() => {
+    const productosRef = collection(db, "productos"); //db es la base de datos, y "productos" es la coleccion que queremos
+    getDocs(productosRef).then((res) => {//es una promesa
+      console.log(res);
+    });
+  }, [categoria]);
+~~~~
+Comprobamos en consola que nos devuelve. Nos sale una respuesta pero lleva mucha informacion, le agregamos al console.log lo siguiente:
+console.log(res.doc). Y lo que nos devuelve es una array de objetos pero que todavia no es lo que buscamos.
 
-function App() {
+Como el id es una cosa que esta a parte de la informacion, sin colocamos  console.log(res.docs[0].id), nos saldra el primer id,
+y si depues colocamos  console.log(res.docs[0].data()), ya nos saldra la informacion del primer registro.
 
-  const [carrito, setCarrito] = useState([]);
+Entonces el id y la data no estan juntos en cada registro. Para juntarlos haremos lo siguiente:
+~~~~
+  useEffect(() => {
+    const productosRef = collection(db, "productos"); //db es la base de datos, y "productos" es la coleccion que queremos
+    getDocs(productosRef).then((resp) => {//es una promesa
 
-  return (
-    <div>
-      <CartContext.Provider>
-     
-      <BrowserRouter>
-        <Nabvar />
-        <Routes>
-          <Route path="/" element={<ItemListContainer />} />
-          <Route path="/item/:id" element={<ItemDetailContainer/>} />
-           <Route path="/productos/" element={<ItemListContainer />} />
-          <Route path="/productos/:categoria" element={<ItemListContainer />} />
-          <Route path="/nosotros" element={<Nosotros />} />
-          <Route path="/contacto" element={<Contacto />} />
-        </Routes>
+      console.log(
+
+        resp.docs.map((doc) => {
+          return { id: doc.id, ...doc.data() } //id es el id del documento y data es el contenido del documento
+        }) 
+
+      )
       
-      </BrowserRouter>
-      </CartContext.Provider>
-    </div>
-  );
-}
+    });
+  }, [categoria]);
 ~~~~
+Con este return "return { id: doc.id, ...doc.data() }", juntamos cada registro con su id. Cuando comprobamos por consola que ya funciona. Cambiamos el console.log por setProductos, para que cambie el estado. Y ya funcionaria, ya estamos recuperando informacion de firebase.
 
-Ahora como hacemos para compartir toda la informacion, mediante una comando del Provider, "value":
+Ahora ya sale la lista de productos. Ahora vamos hacer algo parecido en itemDetailContainer.jsx, borraremos el interior primario del useEffect. Una diferencia es que esta vez solo queremos recuperar un producto, para ello vamos a importar cosas diferentes. Necesitaremos "doc y getDoc". Despues todo lo demas es parecido
 
+ItemDetailContainer.jsx
 ~~~~
-const user = "Carpi";
-const edad = 27;
-return (
-‹div›
-  ‹CartContext. Provider value={user}>
-    < BrowserRouter>
-~~~~
-Ahora user ya se puede compartir, y como lo utlizo:
+import React, { useEffect, useState } from "react";
+// import { pedirItemPorId } from "../helpers/pedirDatos";
+import ItemDetail from "./ItemDetail";
+import { useParams } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase/config";
 
+const ItemDetailContainer = () => {
+  const [item, setItem] = useState(null);
+  const id = useParams().id;
+  console.log("ItemDetailContainer",id);
 
-Por ejemplo en ItemDetail.jsx:
-~~~~
-const ItemDetail = ( {item) ) => {
-const user = useContext (CartContext);
-console. log(user) ;
-~~~~
-Se imprimiria en consola el nombre de user.
-
-Provider Value, solo puede pasar una propiedad. Por eso se le pasara un objeto con muchas propiedades:
-
-~~~~
-App.jsx
-<CartContext.Provider value={{user,edad}}>
-.
-.
-.
-ItemDetail.jsx
-const {user,edad}=useContext(CartContext)//Tambien valdria const user = useContext (CartContext).user;
-    console.log("ItemDetail context" , user,edad);
-~~~~
-
-
-Bueno todo esto a sido un ejemplo borramos todo esto. Volvemos a App.jsx, colocamos en el provider "carrito" y "setCarrito".Despues nos vamos a ItemDetail, ya que tenemos que darle funcionalidades al boton "Agregar Carrito". Y recibiran el carrito y el setCarrito.
-
-ItemDetail.jsx
-~~~~~~
- const handleAgregar=()=>{
-        const itemAgregado={...item, cantidad}
-        setCarrito([...carrito, itemAgregado])
-
-    }
-~~~~~~
-Pero al hacer esto vamos agregando lo que ya esta agregado una y otra vez y eso no es lo que queremos, queremos que se sume la nueva cantidad.
-
-ItemDetail.jsx
-~~~~
- const handleAgregar = () => {
-    const itemAgregado = { ...item, cantidad };
-    const estaEnCarrito=carrito.find((producto) => producto.id === itemAgregado.id)
-
-    if (estaEnCarrito) {
-      console.log("El producto ya fue agregado");
-    } else {
-      console.log("No se encontro el producto");
-    }
-    setCarrito([...carrito, itemAgregado]);
-  };
-~~~~
-Ahora hace una comprobacion para saber si ya se agrego.
-
-Ahora vamos hacer que sume si ya se agrego:
-
-~~~~
-  const handleAgregar = () => {
-    const itemAgregado = { ...item, cantidad };
-
-    const nuevoCarrito = [...carrito];
-    const estaEnCarrito=nuevoCarrito.find((producto) => producto.id === itemAgregado.id)
-
-    if (estaEnCarrito) {
-        estaEnCarrito.cantidad += cantidad;
-        setCarrito(nuevoCarrito);
-      console.log("El producto ya fue agregado");
-    } else {
-      console.log("No se encontro el producto");
-      setCarrito([...carrito, itemAgregado]);
-    }
+  useEffect(() => {
+    // pedirItemPorId(Number(id))
+    //   .then((res) => {
+    //   setItem(res);
+    // });
+    const docRef = doc(db, "productos", id);
+    getDoc(docRef).then((resp) => {
+      setItem({ id: resp.id, ...resp.data() });
+     });
     
-  };
+  }, [id]);
 ~~~~
 
-Simplificando :
-~~~~
-.
-.
-  if (estaEnCarrito) {
-      estaEnCarrito.cantidad += cantidad;
-    } else {
-      nuevoCarrito.push(itemAgregado);
-    }
-    setCarrito(nuevoCarrito);
-  };
-~~~~
+Ahora tenemos un problema, cuando pulsamos en la navbar, no fitra por categorias. Es decir yo doy a pantalones y me sale todo, no me filtra. Y no queremos filtrarlos en nuestra aplicacion. Queremos que lo filtre firebase ya que puede hacer eso.
 
-Como la funcion agregar pertenece masval contexto. Vamos a cambiarla de sitio. La vamos a colocar en App.jsx.
-Ahora la logica de agregarALCarrito(le hemos cambiado el nombre de "handleAgregar" por agregarAlCarrito) esta en App.jsx.
-Ahy que decir que en ItemDetail, dentro del componente "ItemCount", donde llamamos a "agregarAlCarrito". Esta funcion tiene argumentos y no se puede llamar asi " handleAgregar={(agregarAlCarrito(item, cantidad)}", por que React no te lo permite, lo haremos con una funcion anonima:
-ItemDetail.jsx
+Vamos a itemListContainer y vamos a importar unos nuevos comandos, query y where. Con esto haremos una consulta para filtrar en un campo concreto lo que estamos buscando que en este caso es la categoria que pulsamos:
+ItemListContainer.jsx
 ~~~~
-.
-.
- <ItemCount
-            cantidad={cantidad}
-            handleRestar={handleRestar}
-            handleSumar={handleSumar}
-            handleAgregar={() => agregarAlCarrito(item, cantidad)}
-          />
-.
-.
+ const q=query(productosRef, where("categoria","==",categoria)) //trae los productos que tienen la categoria que le pasamos por parametro. Es un consulta
+~~~~
+Ahora en getDocs si en vez de productoRef colocamos nuestra constante "q", nos devolvera los documentos con esa categoria.
 
-~~~~
+Pero nos producia un error, se ve que al principio categoria esta vacio, entonces la query busca con un undifined. Lo cambiamos y utilizamos una sentencia con ternario para comprobar si categoria esta vacio. Si es asi, colocamos todos los productos.
 
-## Creacion de Componente Widget ##
-
-Vamos a mostrar el carrito en un widget. Creamos el componente "CardWidget".
-CartWidget.jsx:
-~~~~
-const CartWidget = () => {
-  return (
-    <div>
-      <Link className="menu-link" to="/carrito">
-       Carrito
-       <span className="numerito"> 0</span>
-      </Link>
-    </div>
-  );
-};
-
-export default CartWidget;
-~~~~
-Y lo agregamos a la "Navbar.jsx":
-~~~~
-.
-.
-<li><CartWidget/></li>
-.
-.
-~~~~
-Claro lo que queremos es que cada vez que aumentamos el carrito se vea reflejado.
-En App.jsx, creamos una nueva funcion:
-~~~~
-const cantidadEnCarrito=()=>{
-    return carrito.reduce((acc, prod) => acc + prod.cantidad, 0);//reduce recorre el array y acumula. En este caso acumula la cantidad de productos en el carrito
-  }
-~~~~
-Y  ahora esto lo llamaremos en Cartwidget:
-~~~~
-import React, { useContext } from "react";
-import { Link } from "react-router-dom";
-import { CartContext } from "../context/CartContext";
-
-const CartWidget = () => {
-  const { cantidadEnCarrito } = useContext(CartContext);
-  return (
-    <div>
-      <Link className="menu-link" to="/carrito">
-        Carrito
-        <span className="numerito"> {cantidadEnCarrito()}</span>
-      </Link>
-    </div>
-  );
-};
-
-export default CartWidget;
-~~~~
-
-Ahora lo que necesitamos es que cuando pulsemos carrito nos lleve a una ruta hasta el carrito...27:34.
-Vamos a App.jsx y agregamos una nueva "Route" con Carrito, y creamos un nuevo componente llamado carrito. Ese componente mostrara los datos de las cosas que vamos adquiriendo.
-Ahora mismo mientras vamos añadiendo cosas al carrito, vamos creando un array. Con ayuda del Cartcontext y useContext, podremos llegar en carrito a ese array.
-Y con un .map lo recorreremos:
-Carrito.jsx
-~~~~
-           <div className='container'>
-        <h1 className='main-title'>Carrito</h1>
-        {
-            
-            carrito.map((prod)=>(
-              <div key={prod.id}>
-                  <h2>{prod.titulo}</h2>
-                  <p>Precio unit: ${prod.precio}</p>
-                  <p>Precio total: ${prod.precio * prod.cantidad}</p>
-                  <p>Cant:{prod.cantidad}</p>
-              </div>
-            ))
-        }
-        </div>
-~~~~
-Ahora queremos agregar el precio total de todo el carrito. Antes para ello crearemos una funcion en App.jsx para ese cometido:
-App.jsx:
-~~~~
- const precioTotal = () => {
-    return carrito.reduce((acc, prod) => acc + prod.cantidad * prod.precio, 0); //acumula el precio total del carrito
-  }
-
-  return (
-    <div>
-      <CartContext.Provider
-        value={{ carrito, agregarAlCarrito, cantidadEnCarrito, precioTotal }}
-      >
-~~~~
-Y se lo agregamos a nuestro cartContext. Una vez en Carrito.jsx. Se lo agregamos a nuestra destructuracion de useContext y ya lo podemos utilizar en cualquier parte de Carrito.jsx.
-Carrito.jsx:
-~~~~
-.
-.
-
-const Carrito = () => {
-    const {carrito,precioTotal}=useContext(CartContext)
-.
-.
-       </div>
-            ))
-        }
-        <h2>Precio Totatl:${precioTotal()}</h2>
-        </div>
-  )
-
-~~~~
-Ten encuenta que si no colocas "${precioTotal()}" con parentesis, la funcion no se ejecutara.
-
-Ahora vamos agregar un boton para vaciarCarrito, debajo del precio Total. La funcion estara en App.jsx y tambien se la pasaremos a traves del CartContext. El onclick del boton actuara una funcion que a su vez actuara a vaciarCarrito.
-Ademas agregamos una pequeña logica para que solo se visualize el precio total, solo si hemos cogido algo.
-Carrito.jsx:
-~~~~
-const Carrito = () => {
-  const { carrito, precioTotal,vaciarCarrito } = useContext(CartContext);
-
-  const handleVaciar = () => {
-    vaciarCarrito();
-  }
-  return (
-    <div className="container">
-      <h1 className="main-title">Carrito</h1>
-      {carrito.map((prod) => (
-        <div key={prod.id}>
-          <h2>{prod.titulo}</h2>
-          <p>Precio unit: ${prod.precio}</p>
-          <p>Precio total: ${prod.precio * prod.cantidad}</p>
-          <p>Cant:{prod.cantidad}</p>
-          <br />
-        </div>
-      ))}
-
-        {
-        carrito.length > 0 ?
-        <>
-        <h2>Precio Total: ${precioTotal()}</h2>
-        <button onClick={handleVaciar}>Vaciar</button>
-        </>:
-        <h2>No hay productos en el carrito :( </h2>
-        
-      }
-    </div>
-  );
-};
-
-export default Carrito;
-
-~~~~
-
-## Centralizando todo el contexto ##
-
-Nuestro CartContext.jsx esta vacio, tenemos que utilizarlo y todo nuestro CartContext lo tenemos que llevar alli. Todo lo que havia desde el principio hasta el return en la App.jsx, pasa a CartContext . 
-Entonces con todo eso, creamos un componente CarProvider con un argumento "chidren".
-Mas abajo en el return devolvemos ese componente con todos sus argumentos (como antes, cuando se llamaba CarContext), y en medio del principio y el final del componente, colocamos "{children}". Depues en App.jsx
-envolvemos el resto de componentes con el compoente "CartProvider". 
-Lo que conseguimos con "children" es que todo lo que ponemos dentro de "CartProvider" actue como su children.
-
-De esta manera hemos centralizado todo el CartContext
-
-## LocalStorage 
-Para que al actualizar no se borre todo.
-Creamos En CartContext.jsx, "carritoInicial", el cual busca un item de "carrito", si no hubiera colocaria una array vacio.
-CartContext.jsx
-~~~~
-const carritoInicial = JSON.parse(localStorage.getItem("carrito")) || [];
-~~~~
-
-Despues creamos un "useEffect", que cuando se monte o cambie el estado del carrito, se guarde un item denominado "carrito" que contenga el interior del array carrito
-~~~~
- useEffect(() => {
-    localStorage.setItem("carrito", JSON.stringify(carrito));
-  }, [carrito]);    
-~~~~
-Si vamos a inspeccionar, en almacenamiento local, (dentro de aplicacion), podremos ver como se guarda y aunque se actualize, no se borra la info.
+Ahora ya si damos a las categorias, nos salen lo que hay en cada categoria.
